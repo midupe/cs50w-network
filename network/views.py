@@ -1,10 +1,35 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import Http404, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
 
 from .models import *
+
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except:
+        return HttpResponseNotFound("404 - Not found")
+    
+    results = {}
+   
+    if request.method == "POST":
+        if Follow.objects.filter(following = user, follower = request.user).count() > 0:
+            f = Follow.objects.filter(following = user, follower = request.user)
+            f.delete()
+        else:
+            f = Follow(following = user, follower = request.user)
+            f.save()
+
+    results['username'] = username
+    results["posts"] = list(Post.objects.filter(user=user).order_by('-date'))
+    results["followers"] = Follow.objects.filter(following = user).count()
+    results["following"] = Follow.objects.filter(follower = user).count()
+    results["iamfollowing"] = True if Follow.objects.filter(following = user, follower = request.user).count() > 0 else False
+
+    return render(request, "network/profile.html", results)
 
 
 def index(request):
