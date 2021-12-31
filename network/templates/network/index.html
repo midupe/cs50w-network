@@ -23,6 +23,9 @@
     <p>{{item.post}}</p>
     <p style="font-weight: lighter;">{{item.date}}</p>
     <a style="display: inline-block;"><i class="far fa-heart"></i> {{item.likes}}</a>
+    {% if user.username == item.user.username %}
+    <p style="text-align:right;"><a style="font-weight: bold;">Edit</a></p>
+    {% endif %}
 </div>
 {% endfor %}
 
