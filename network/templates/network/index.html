@@ -1,5 +1,18 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+
+{% if user.is_authenticated %}
+<div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px;">
+    <form method="POST" action="" style="padding: 10px">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="newPost">New post</label>
+            <textarea class="form-control" id="newPost" rows="3" name="newPost" maxlength="254" required></textarea>
+            <button type="submit" class="btn btn-primary" style="float: right; margin-top: 10px;">Create</button>
+        </div>
+    </form>
+</div>
+{%endif%}
+
 {% endblock %}

@@ -4,3 +4,9 @@ from django.db import models
 
 class User(AbstractUser):
     pass
+
+class Post(models.Model):
+    post = models.CharField(max_length=254)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    likes = models.IntegerField(default=0)
