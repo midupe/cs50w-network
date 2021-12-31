@@ -2,12 +2,14 @@
 
 {% block body %}
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and "/following" not in request.get_full_path %}
 <div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px; padding: 10px;">
     <form method="POST" action="">
         {% csrf_token %}
         <div class="form-group">
-            <label for="newPost"><h4>New post</h4></label>
+            <label for="newPost">
+                <h4>New post</h4>
+            </label>
             <textarea class="form-control" id="newPost" rows="3" name="newPost" maxlength="254" required></textarea>
             <button type="submit" class="btn btn-primary" style="float: right; margin-top: 10px;">Create</button>
         </div>
@@ -22,8 +24,17 @@
     <p style="font-weight: lighter;">{{item.date}}</p>
     <a style="display: inline-block;"><i class="far fa-heart"></i> {{item.likes}}</a>
 </div>
-
-
 {% endfor %}
+
+<nav style="margin: 20px;">
+    <ul class="pagination justify-content-center">
+        {% if posts_currpage > 1 %}
+        <li class="page-item"><a class="page-link" href="{{ posts_currpage|add:"-1" }}">Previous</a></li>
+        {% endif %}
+        {% if  posts_numpages > posts_currpage %}
+        <li class="page-item"><a class="page-link" href="{{ posts_currpage|add:"1" }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
 
 {% endblock %}

@@ -4,23 +4,9 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 from .models import *
-
-@login_required(login_url='/register')
-def following(request):
-    results = {}
-    if request.method == "POST":
-        try:
-            post = request.POST["newPost"]
-            newPost = Post(post=post, user=request.user)
-            newPost.save()
-        except:
-            pass
-    
-    results["posts"] = list(Post.objects.filter(user__in=list(Follow.objects.filter(follower=request.user).values_list('id', flat=True))).order_by('-date'))
-
-    return render(request, "network/index.html", results)
 
 def profile(request, username):
     try:
@@ -46,8 +32,28 @@ def profile(request, username):
 
     return render(request, "network/profile.html", results)
 
+@login_required(login_url='/register')
+def following(request, page=0):
+    if page == 0:
+        return HttpResponseRedirect('/following/1')
+    results = {}
+    
+    try:
+        posts = Post.objects.filter(user__in=list(Follow.objects.filter(follower=request.user).values_list('id', flat=True))).order_by('-date')
+        p = Paginator(posts, 10)
+        results["posts"] = p.page(page)
+        results["posts_numpages"] = p.num_pages
+        results["posts_currpage"] = page
+    except:
+        pass
 
-def index(request):
+    return render(request, "network/index.html", results)
+
+
+def index(request, page=0):
+    if page == 0:
+        return HttpResponseRedirect('/1')
+
     results = {}
     if request.method == "POST" and request.user.is_authenticated:
         try:
@@ -56,8 +62,15 @@ def index(request):
             newPost.save()
         except:
             pass
-    
-    results["posts"] = list(Post.objects.filter().order_by('-date'))
+
+    try:
+        posts = Post.objects.filter().order_by('-date')
+        p = Paginator(posts, 10)
+        results["posts"] = p.page(page)
+        results["posts_numpages"] = p.num_pages
+        results["posts_currpage"] = page
+    except:
+        pass
 
     return render(request, "network/index.html", results)
 
