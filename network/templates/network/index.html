@@ -3,16 +3,27 @@
 {% block body %}
 
 {% if user.is_authenticated %}
-<div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px;">
-    <form method="POST" action="" style="padding: 10px">
+<div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px; padding: 10px;">
+    <form method="POST" action="">
         {% csrf_token %}
         <div class="form-group">
-            <label for="newPost">New post</label>
+            <label for="newPost"><h4>New post</h4></label>
             <textarea class="form-control" id="newPost" rows="3" name="newPost" maxlength="254" required></textarea>
             <button type="submit" class="btn btn-primary" style="float: right; margin-top: 10px;">Create</button>
         </div>
     </form>
 </div>
 {%endif%}
+
+{% for item in posts %}
+<div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px; padding: 10px;">
+    <h4>@{{item.user.username}}</h4>
+    <p>{{item.post}}</p>
+    <p style="font-weight: lighter;">{{item.date}}</p>
+    <a style="display: inline-block;"><i class="far fa-heart"></i> {{item.likes}}</a>
+</div>
+
+
+{% endfor %}
 
 {% endblock %}

@@ -8,6 +8,7 @@ from .models import *
 
 
 def index(request):
+    results = {}
     if request.method == "POST" and request.user.is_authenticated:
         try:
             post = request.POST["newPost"]
@@ -15,8 +16,10 @@ def index(request):
             newPost.save()
         except:
             pass
+    
+    results["posts"] = list(Post.objects.filter().order_by('-date'))
 
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", results)
 
 
 def login_view(request):
