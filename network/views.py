@@ -1,11 +1,26 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http.response import Http404, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import *
+
+@login_required(login_url='/register')
+def following(request):
+    results = {}
+    if request.method == "POST":
+        try:
+            post = request.POST["newPost"]
+            newPost = Post(post=post, user=request.user)
+            newPost.save()
+        except:
+            pass
+    
+    results["posts"] = list(Post.objects.filter(user__in=list(Follow.objects.filter(follower=request.user).values_list('id', flat=True))).order_by('-date'))
+
+    return render(request, "network/index.html", results)
 
 def profile(request, username):
     try:
