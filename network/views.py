@@ -8,6 +8,16 @@ from django.core.paginator import Paginator
 
 from .models import *
 
+"""
+
+
+TODO
+FIQUEI NA PARTE DE EDITAR POSTS.
+    FALTA TUDO, SO ADICIONEI O "BOTAO".
+
+
+"""
+
 def profile(request, username):
     try:
         user = User.objects.get(username=username)
@@ -125,3 +135,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def post(request, id):
+    return
