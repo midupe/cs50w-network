@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http.response import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -136,5 +137,18 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+@login_required(login_url='/register')
 def post(request, id):
-    return
+    try:
+        post = Post.objects.get(id=id)
+    except:
+        return HttpResponseNotFound("404 - Not found")
+        
+    if post.user != request.user:
+        return HttpResponseForbidden("403 - Forbidden")
+
+    if request.method == "POST":
+        post.post = request.POST["editPost"]
+        post.save()
+
+    return JsonResponse({"status: success"})

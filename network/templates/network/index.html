@@ -3,28 +3,6 @@
 {% block body %}
 
 {% if user.is_authenticated and "/following" not in request.get_full_path %}
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px; padding: 10px;">
     <form method="POST" action="">
         {% csrf_token %}
@@ -42,12 +20,14 @@
 {% for item in posts %}
 <div class="card" style="max-width: 500px; margin-right: auto; margin-left: auto; margin-top: 20px; padding: 10px;">
     <h4><a href="/user/{{item.user.username}}">@{{item.user.username}}</a></h4>
-    <p>{{item.post}}</p>
+    <p id="postText{{item.id}}">{{item.post}}</p>
     <p style="font-weight: lighter;">{{item.date}}</p>
     <a style="display: inline-block;"><i class="far fa-heart"></i> {{item.likes}}</a>
     {% if user.username == item.user.username %}
-    <a style="font-weight: bold; cursor: pointer;" data-toggle="modal" data-target="#exampleModal"><p style="text-align:right;">Edit
-    </p></a>
+    <a onclick="return editPost({{item.id}})" style="font-weight: bold; cursor: pointer;" data-toggle="modal" data-target="#exampleModal">
+        <p style="text-align:right;">Edit
+        </p>
+    </a>
     {% endif %}
 </div>
 {% endfor %}
