@@ -6,18 +6,23 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
 
-"""
-
-
-TODO
-FIQUEI NA PARTE DE EDITAR POSTS.
-    FALTA TUDO, SO ADICIONEI O "BOTAO".
-
-
-"""
+def updateLikes():
+    try:
+        posts = Post.objects.filter()
+        for post in posts:
+            try:
+                likes = Like.objects.filter(post=post).count()
+                post.likes = likes
+                post.save()
+            except:
+                pass
+    except:
+        pass
+    return True
 
 def profile(request, username):
     try:
@@ -152,3 +157,31 @@ def post(request, id):
         post.save()
 
     return JsonResponse({"status": "success"})
+
+@csrf_exempt
+@login_required(login_url='/register')
+def like(request, id):
+    try:
+        post = Post.objects.get(id=id)
+    except:
+        return HttpResponseNotFound("404 - Not found")
+
+    hasLike = Like.objects.filter(post=post, user=request.user)
+    if hasLike.count() > 0:
+        hasLike.delete()
+    else:
+        like = Like(post=post, user=request.user)
+        like.save()
+
+    updateLikes()
+    return JsonResponse({"status": "success"})
+
+@csrf_exempt
+@login_required(login_url='/register')
+def myLikes(request):
+    likes = Like.objects.filter(user=request.user)
+    results = []
+    for item in likes:
+        results.append(item.post.id)
+
+    return JsonResponse({"status": "sucess", "results": results})
