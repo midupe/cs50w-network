@@ -151,4 +151,4 @@ def post(request, id):
         post.post = request.POST["editPost"]
         post.save()
 
-    return JsonResponse({"status: success"})
+    return JsonResponse({"status": "success"})
